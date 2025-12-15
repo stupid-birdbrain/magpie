@@ -1,9 +1,12 @@
 [submodule "deps/standard"]
 	path = deps/standard
-	url = https://github.com/stupid-birdbrain/standard.git
+	url = https://github.com/stupid-birdbrain/standard
 [submodule "deps/magpie-shaderc"]
 	path = deps/magpie-shaderc
-	url = https://github.com/stupid-birdbrain/magpie-shaderc.git
+	url = https://github.com/stupid-birdbrain/magpie-shaderc
 [submodule "deps/auklet"]
 	path = deps/auklet
-	url = https://github.com/stupid-birdbrain/auklet.git
+	url = https://github.com/stupid-birdbrain/auklet
+[submodule "deps/stained-glass"]
+	path = deps/stained-glass
+	url = https://github.com/stupid-birdbrain/stained-glass
