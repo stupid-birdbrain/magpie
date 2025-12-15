@@ -3,5 +3,6 @@
     <File Path=".gitignore" />
   </Folder>
   <Project Path="src\Samples\Samples.csproj" />
+  <Project Path="deps/auklet/src/Auklet/Auklet.csproj" />
   <Project Path="src\Magpie\Magpie.csproj" />
 </Solution>
