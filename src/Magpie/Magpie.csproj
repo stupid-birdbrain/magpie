@@ -21,8 +21,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="../../deps/standard/src/Standard/Standard.csproj" />
+      <ProjectReference Include="..\..\deps\auklet\src\Auklet\Auklet.csproj" />
       <ProjectReference Include="..\..\deps\magpie-shaderc\src\ShaderCompilation\ShaderCompilation.csproj" />
+      <ProjectReference Include="..\..\deps\stained-glass\src\StainedGlass\StainedGlass.csproj" />
+      <ProjectReference Include="..\..\deps\standard\src\Standard\Standard.csproj" />
     </ItemGroup>
 
 </Project>

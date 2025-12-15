@@ -12,12 +12,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="../Magpie/Magpie.csproj" />
-      <ProjectReference Include="../../deps/magpie-shaderc/src/ShaderCompilation/ShaderCompilation.csproj" />
-      <ProjectReference Include="../../deps/stained-glass/src/StainedGlass/StainedGlass.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" Version="2025.2.4" />
         <PackageReference Include="SDL3-CS" Version="3.2.16.1" />
         <PackageReference Include="SDL3-CS.Native" Version="3.2.20" />
@@ -62,6 +56,15 @@
         <None Update="**/*.glsl">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+    </ItemGroup>
+    
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\deps\auklet\src\Auklet\Auklet.csproj" />
+      <ProjectReference Include="..\..\deps\magpie-shaderc\src\ShaderCompilation\ShaderCompilation.csproj" />
+      <ProjectReference Include="..\..\deps\stained-glass\src\StainedGlass\StainedGlass.csproj" />
+      <ProjectReference Include="..\..\deps\standard\src\Standard\Standard.csproj" />
+      <ProjectReference Include="..\Magpie\Magpie.csproj" />
     </ItemGroup>
 
 </Project>

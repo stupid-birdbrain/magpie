@@ -1,4 +1,5 @@
-using Magpie.Core;
+﻿using Auklet;
+using Auklet.Core;
 using Vortice.Vulkan;
 
 namespace Magpie;
@@ -17,7 +18,8 @@ public sealed class RenderTarget : IDisposable {
         Height = height;
         Format = format;
 
-        Image = new Image(device, width, height, 1, format, VkImageUsageFlags.ColorAttachment | VkImageUsageFlags.Sampled | VkImageUsageFlags.TransferDst | VkImageUsageFlags.TransferSrc);
+        Image = new Image(device, width, height, 1, format,
+            VkImageUsageFlags.ColorAttachment | VkImageUsageFlags.Sampled | VkImageUsageFlags.TransferDst | VkImageUsageFlags.TransferSrc);
         Memory = new DeviceMemory(Image, VkMemoryPropertyFlags.DeviceLocal);
         ImageView = new ImageView(Image);
 

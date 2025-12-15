@@ -1,13 +1,14 @@
+using Auklet;
+using Auklet.Core;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Magpie.Core;
 using Magpie.Utilities;
 using SDL3;
 using Standard;
 using Vortice.Vulkan;
 using static Vortice.Vulkan.Vulkan;
-using Image = Magpie.Core.Image;
-using Semaphore = Magpie.Core.Semaphore;
+using Semaphore = Auklet.Core.Semaphore;
+using Image = Auklet.Core.Image;
 
 namespace Magpie;
 
@@ -111,7 +112,7 @@ public sealed unsafe class GraphicsDevice : IDisposable {
         
         VkResult result = vkAcquireNextImageKHR(
             _logicalDevice,
-            _mainSwapchain.Value,
+            _mainSwapchain,
             ulong.MaxValue,
             currentImageAvailableSemaphore,
             VkFence.Null,
@@ -406,7 +407,7 @@ public sealed unsafe class GraphicsDevice : IDisposable {
         VkRenderingAttachmentInfo depthAttachment = new()
         {
             sType = VkStructureType.RenderingAttachmentInfo,
-            imageView = _depthImage.ImageView.Value,
+            imageView = _depthImage.ImageView,
             imageLayout = VkImageLayout.DepthStencilAttachmentOptimal,
             loadOp = depthLoadOp,
             storeOp = VkAttachmentStoreOp.DontCare,
@@ -443,7 +444,7 @@ public sealed unsafe class GraphicsDevice : IDisposable {
             attachments[i] = new VkRenderingAttachmentInfo
             {
                 sType = VkStructureType.RenderingAttachmentInfo,
-                imageView = target.ImageView.Value,
+                imageView = target.ImageView,
                 imageLayout = VkImageLayout.ColorAttachmentOptimal,
                 loadOp = loadOp,
                 storeOp = VkAttachmentStoreOp.Store,

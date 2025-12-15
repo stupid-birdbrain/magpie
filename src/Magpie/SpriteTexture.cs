@@ -1,5 +1,6 @@
+using Auklet;
+using Auklet.Core;
 using System;
-using Magpie.Core;
 
 namespace Magpie;
 

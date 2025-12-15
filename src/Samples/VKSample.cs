@@ -1,7 +1,8 @@
-﻿using Magpie;
+﻿using Auklet;
+using Auklet.Core;
+using Magpie;
 using System.Diagnostics;
 using System.Numerics;
-using Magpie.Core;
 using Magpie.Utilities;
 using SDL3;
 using ShaderCompilation;
@@ -10,10 +11,11 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using StainedGlass;
 using Standard;
+using System.Net.Mime;
 using System.Runtime.InteropServices;
 using Vortice.Vulkan;
-using Buffer = Magpie.Core.Buffer;
-using Image = Magpie.Core.Image;
+using Buffer = Auklet.Core.Buffer;
+using Image = Auklet.Core.Image;
 
 namespace Samples;
 

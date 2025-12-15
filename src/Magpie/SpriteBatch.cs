@@ -1,7 +1,7 @@
+using Auklet.Core;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Magpie.Core;
 using Magpie.Utilities;
 using Standard;
 using Vortice.Vulkan;
@@ -342,8 +342,8 @@ public sealed class SpriteBatch : IDisposable {
 		_commandBuffer.BindPipeline(_pipeline);
 		float viewportWidth = Math.Max(1u, _graphicsDevice.CurrentRenderWidth);
 		float viewportHeight = Math.Max(1u, _graphicsDevice.CurrentRenderHeight);
-		_commandBuffer.SetViewport(new Rectangle(0f, 0f, viewportWidth, viewportHeight));
-		_commandBuffer.SetScissor(new Rectangle(0f, 0f, viewportWidth, viewportHeight));
+		_commandBuffer.SetViewport(new Vector4(0f, 0f, viewportWidth, viewportHeight));
+		_commandBuffer.SetScissor(new Vector4(0f, 0f, viewportWidth, viewportHeight));
 		PushTransform();
 
 		return new SpriteBatchScope(this);
@@ -729,10 +729,10 @@ public sealed class SpriteBatch : IDisposable {
 
         buffer.IndexBuffer.CopyFrom(new ReadOnlySpan<uint>(_indexScratch, 0, indexCount), indexStart);
 
-        VkBuffer vertexBufferHandle = buffer.VertexBuffer.Buffer.Value;
+        VkBuffer vertexBufferHandle = buffer.VertexBuffer.Buffer;
         ulong vertexOffset = 0;
         vkCmdBindVertexBuffers(_commandBuffer, 0, 1, &vertexBufferHandle, &vertexOffset);
-        vkCmdBindIndexBuffer(_commandBuffer, buffer.IndexBuffer.Buffer.Value, 0, VkIndexType.Uint32);
+        vkCmdBindIndexBuffer(_commandBuffer, buffer.IndexBuffer.Buffer, 0, VkIndexType.Uint32);
 
         Span<DescriptorSet> descriptorSetsToBind = stackalloc DescriptorSet[1];
         descriptorSetsToBind[0] = _currentBatchDescriptorSet;
@@ -750,7 +750,7 @@ public sealed class SpriteBatch : IDisposable {
 		Matrix4x4 transform = _transform;
 		vkCmdPushConstants(
 			_commandBuffer,
-			_pipelineLayout.Value,
+			_pipelineLayout,
 			VkShaderStageFlags.Vertex,
 			0,
 			(uint)Unsafe.SizeOf<Matrix4x4>(),
