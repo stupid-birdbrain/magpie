@@ -14,4 +14,8 @@ public static class CmdBufferExt {
         public void SetScissor(Rectangle rect) 
             => buf.SetScissor(new Rectangle(rect.X, rect.Y, rect.Width, rect.Height));
     }
+
+    extension((int, int) tuple) {
+        public Vector2 ToVector2() => new Vector2(tuple.Item1, tuple.Item2);
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using Auklet;
 using Auklet.Core;
 using Magpie;
+using Magpie.Ext;
 using System.Diagnostics;
 using System.Numerics;
 using Magpie.Utilities;
