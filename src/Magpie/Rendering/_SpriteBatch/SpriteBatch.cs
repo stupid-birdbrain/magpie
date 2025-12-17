@@ -1,4 +1,5 @@
 using Auklet.Core;
+using Magpie.Rendering;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -7,7 +8,7 @@ using Standard;
 using Vortice.Vulkan;
 using static Vortice.Vulkan.Vulkan;
 
-namespace Magpie;
+namespace Magpie.Rendering;
 
 /* thank you jasper for ths impl
     todo - more sorting modes, pipeline swapping
@@ -49,7 +50,7 @@ public sealed class SpriteBatch : IDisposable {
 	private uint[] _indexScratch = Array.Empty<uint>();
 
 	private struct SpriteInfo {
-		public SpriteTexture Texture;
+		public Texture2D Texture;
 		public Vector2 Position;
 		public Rectangle? SourceRectangle;
 		public Color Color;
@@ -64,14 +65,14 @@ public sealed class SpriteBatch : IDisposable {
 
 	private int _scratchCapacity;
 	private int _spriteCount;
-	private SpriteTexture? _currentTexture;
+	private Texture2D? _currentTexture;
 	private bool _isActive;
 	private SpriteSortMode _sortMode;
 	private Matrix4x4 _transform;
 	private CmdBuffer _commandBuffer;
 
 	public struct DrawSettings {
-		public required SpriteTexture Texture;
+		public required Texture2D Texture;
 		public required Color Color;
 
 		public Vector2 Position;
@@ -403,7 +404,7 @@ public sealed class SpriteBatch : IDisposable {
 	}
 
 	public void Draw(
-		SpriteTexture texture,
+        Texture2D texture,
 		Vector2 position,
 		Rectangle? sourceRectangle,
 		Color color,
@@ -431,7 +432,7 @@ public sealed class SpriteBatch : IDisposable {
 	}
 
 	public void Draw(
-		SpriteTexture texture,
+        Texture2D texture,
 		Rectangle destinationRectangle,
 		Color color,
 		Rectangle? sourceRectangle = null,
@@ -467,7 +468,7 @@ public sealed class SpriteBatch : IDisposable {
 	}
 
 	private void DrawInternal(
-		SpriteTexture texture,
+        Texture2D texture,
 		Vector2 position,
 		Rectangle? sourceRectangle,
 		Color color,
@@ -613,7 +614,7 @@ public sealed class SpriteBatch : IDisposable {
 		);
 	}
 
-	private void EnsureTextureBound(SpriteTexture texture)
+	private void EnsureTextureBound(Texture2D texture)
 	{
 		if (_currentBatchDescriptorSet.Value != VkDescriptorSet.Null &&
 			ReferenceEquals(_currentTexture, texture))
@@ -623,8 +624,8 @@ public sealed class SpriteBatch : IDisposable {
 
 		var descriptorSet = _descriptorPool.AllocateDescriptorSet(_descriptorSetLayout);
 		descriptorSet.Update(
-			texture.ImageView,
-			texture.Sampler,
+			texture.View.ImageView,
+			texture.View.Sampler,
 			VkDescriptorType.CombinedImageSampler
 		);
 
@@ -772,7 +773,7 @@ public sealed class SpriteBatch : IDisposable {
 		return projection;
 	}
 
-	private static Vector2 GetSourceSize(SpriteTexture texture, Rectangle? sourceRectangle) {
+	private static Vector2 GetSourceSize(Texture2D texture, Rectangle? sourceRectangle) {
 		if (sourceRectangle.HasValue) {
 			Rectangle src = sourceRectangle.Value;
 			return new Vector2(src.Width, src.Height);

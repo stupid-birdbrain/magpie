@@ -1,5 +1,6 @@
 ﻿using Auklet;
 using Auklet.Core;
+using Magpie.Rendering;
 using Vortice.Vulkan;
 
 namespace Magpie;
@@ -13,13 +14,20 @@ public sealed class RenderTarget : IDisposable {
     public VkFormat Format { get; }
     internal VkImageLayout CurrentLayout { get; set; }
 
+    private readonly LogicalDevice _device;
+    private readonly CmdPool _commandPool;
+    private readonly Queue _queue;
+
     internal RenderTarget(LogicalDevice device, CmdPool commandPool, Queue queue, uint width, uint height, VkFormat format) {
+        _device = device;
+        _commandPool = commandPool;
+        _queue = queue;
+
         Width = width;
         Height = height;
         Format = format;
 
-        Image = new Image(device, width, height, 1, format,
-            VkImageUsageFlags.ColorAttachment | VkImageUsageFlags.Sampled | VkImageUsageFlags.TransferDst | VkImageUsageFlags.TransferSrc);
+        Image = new Image(device, width, height, 1, format, VkImageUsageFlags.ColorAttachment | VkImageUsageFlags.Sampled | VkImageUsageFlags.TransferDst | VkImageUsageFlags.TransferSrc);
         Memory = new DeviceMemory(Image, VkMemoryPropertyFlags.DeviceLocal);
         ImageView = new ImageView(Image);
 
@@ -35,9 +43,21 @@ public sealed class RenderTarget : IDisposable {
         CurrentLayout = VkImageLayout.ShaderReadOnlyOptimal;
     }
 
-    public SpriteTexture CreateSpriteTexture(VkFilter filter = VkFilter.Linear, VkSamplerAddressMode addressMode = VkSamplerAddressMode.ClampToEdge) {
-        Sampler sampler = new(Image.Device, new SamplerCreateParameters(filter, addressMode));
-        return new SpriteTexture(Image, Memory, ImageView, sampler, ownsImage: false, ownsMemory: false, ownsImageView: false, ownsSampler: true);
+    public Texture2D CreateTexture2D(VkFilter filter = VkFilter.Linear, VkSamplerAddressMode addressMode = VkSamplerAddressMode.ClampToEdge) {
+        Sampler sampler = new(_device, new SamplerCreateParameters(filter, addressMode));
+        return new Texture2D(
+            _device,
+            _commandPool,
+            _queue,
+            Image,
+            Memory,
+            ImageView,
+            sampler,
+            ownsImage: false,
+            ownsMemory: false,
+            ownsImageView: false,
+            ownsSampler: true
+        );
     }
 
     public void Dispose() {

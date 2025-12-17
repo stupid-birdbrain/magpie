@@ -1,6 +1,5 @@
 using Auklet;
 using Auklet.Core;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Magpie.Utilities;
 using SDL3;
@@ -10,7 +9,7 @@ using static Vortice.Vulkan.Vulkan;
 using Semaphore = Auklet.Core.Semaphore;
 using Image = Auklet.Core.Image;
 
-namespace Magpie;
+namespace Magpie.Rendering;
 
 public sealed unsafe class GraphicsDevice : IDisposable {
     public const int MAX_FRAMES_IN_FLIGHT = 2;
@@ -51,6 +50,7 @@ public sealed unsafe class GraphicsDevice : IDisposable {
     public int CurrentFrameIndex => _currentFrame;
     public LogicalDevice LogicalDevice => _logicalDevice;
     public DepthImage DepthImage => _depthImage;
+    
     public uint CurrentRenderWidth { get; private set; }
     public uint CurrentRenderHeight { get; private set; }
     

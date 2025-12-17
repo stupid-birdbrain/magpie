@@ -2,6 +2,7 @@
 using Auklet.Core;
 using Magpie;
 using Magpie.Ext;
+using Magpie.Rendering;
 using System.Diagnostics;
 using System.Numerics;
 using Magpie.Utilities;
@@ -68,8 +69,8 @@ internal sealed unsafe class VkSample {
     private float _cameraSpeed = 1.0f;
 
     private SpriteBatch? _spriteBatch;
-    private SpriteTexture? _sprite;
-    private SpriteTexture? _sprite2;
+    private Texture2D? _sprite;
+    private Texture2D? _sprite2;
     private byte[]? _spriteBatchDefaultVertex;
     private byte[]? _spriteBatchDefaultFragment;
 
@@ -141,8 +142,8 @@ internal sealed unsafe class VkSample {
         Console.WriteLine("selected physical device info:" + bestDevice.ToString());
 
         Graphics = new(_vkInstance, _vkSurface, bestDevice, _vkDevice);
-        _sprite = CreateTextureImage("resources/hashbrown.png");
-        _sprite2 = CreateTextureImage("resources/hashbrown2.png");
+        _sprite = Texture2D.FromFile(Graphics, "resources/hashbrown.png");
+        _sprite2 = Texture2D.FromFile(Graphics, "resources/hashbrown2.png");
 
         var entryPoint = "main"u8;
 
@@ -280,7 +281,8 @@ internal sealed unsafe class VkSample {
             throw new InvalidOperationException("texture was not created before descriptor setup.");
         }
 
-        _descriptorSet.Update(_sprite.ImageView, _sprite.Sampler, VkDescriptorType.CombinedImageSampler);
+        
+        _descriptorSet.Update(_sprite.View.ImageView, _sprite.View.Sampler, VkDescriptorType.CombinedImageSampler);
         _descriptorSet.Update(_instanceBuffer, VkDescriptorType.StorageBuffer, 1);
 
         var spriteVertexCode = _compiler.CompileShader("resources/spritebatch/spritebatch.vert", ShaderKind.Vertex, true).ToArray();
@@ -455,51 +457,6 @@ internal sealed unsafe class VkSample {
         }
 
         graphics.End();
-    }
-
-    private SpriteTexture CreateTextureImage(string path) {
-        using Image<Rgba32> imageSharp = SixLabors.ImageSharp.Image.Load<Rgba32>(path);
-        imageSharp.Mutate(x => x.Flip(FlipMode.Vertical));
-
-        uint imageSize = (uint)(imageSharp.Width * imageSharp.Height * 4);
-        var pixelData = new byte[imageSize];
-        imageSharp.CopyPixelDataTo(pixelData);
-        ReadOnlySpan<byte> pixelSpan = pixelData;
-
-        using var stagingBuffer = new Buffer(_vkDevice, imageSize, VkBufferUsageFlags.TransferSrc);
-        using var stagingMemory = new DeviceMemory(stagingBuffer, VkMemoryPropertyFlags.HostVisible | VkMemoryPropertyFlags.HostCoherent);
-        stagingMemory.CopyFrom(pixelSpan);
-
-        Image textureImage = new Image(
-            _vkDevice,
-            (uint)imageSharp.Width,
-            (uint)imageSharp.Height,
-            1,
-            VkFormat.R8G8B8A8Unorm,
-            VkImageUsageFlags.TransferDst | VkImageUsageFlags.Sampled
-        );
-
-        DeviceMemory textureMemory = new DeviceMemory(textureImage, VkMemoryPropertyFlags.DeviceLocal);
-
-        {
-            using var fence = Graphics!.RequestFence(VkFenceCreateFlags.None);
-            var cmd = Graphics.AllocateCommandBuffer(true);
-            cmd.Begin();
-
-            cmd.TransitionImageLayout(textureImage, VkImageLayout.Undefined, VkImageLayout.TransferDstOptimal);
-            cmd.CopyBufferToImage(stagingBuffer, textureImage, (uint)imageSharp.Width, (uint)imageSharp.Height, 0, 0);
-            cmd.TransitionImageLayout(textureImage, VkImageLayout.TransferDstOptimal, VkImageLayout.ShaderReadOnlyOptimal);
-
-            cmd.End();
-            Graphics.Submit(cmd, fence);
-            fence.Wait();
-            cmd.Dispose();
-        }
-
-        ImageView textureView = new ImageView(textureImage);
-        Sampler textureSampler = new Sampler(_vkDevice, new SamplerCreateParameters(VkFilter.Nearest, VkSamplerAddressMode.Repeat));
-
-        return new SpriteTexture(textureImage, textureMemory, textureView, textureSampler);
     }
 
     private void UpdateShaderData() {
